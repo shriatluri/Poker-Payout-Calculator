@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, send_file, url_for, flash
 import pandas as pd
 import io
 
 app = Flask(__name__)
+app.secret_key = 'supersecretkey'  # Needed for flashing messages
 
 players = []
-default_buy_in = 50
+default_buy_in = 50  # Default buy-in amount
 
 @app.route('/')
 def index():
@@ -33,6 +34,15 @@ def set_default_buy_in():
 
 @app.route('/finalize', methods=['POST'])
 def finalize():
+    #variables for total buy in and total end amount
+    total_buy_in = sum(player['buy_in'] for player in players)
+    total_end_amount = sum(float(request.form[f'end_amount_{player["name"]}']) for player in players)
+    
+    #if there is a discrepency between total end amount and total buy in
+    if total_buy_in != total_end_amount:
+        flash(f'Total end amount (${total_end_amount:.2f}) does not match total buy-in (${total_buy_in:.2f}). Please check your inputs.', 'error')
+        return redirect(url_for('index'))
+    
     for player in players:
         player['end_amount'] = float(request.form[f'end_amount_{player["name"]}'])
     return redirect(url_for('results'))
@@ -55,6 +65,7 @@ def download():
     output.seek(0)
     return send_file(output, download_name="players.xlsx", as_attachment=True)
 
+#greedy algorithm to calculate the payouts of the function
 def calculate_payouts(players):
     balances = {player['name']: player['end_amount'] - player['buy_in'] for player in players}
     creditors = sorted((name for name, balance in balances.items() if balance > 0), key=lambda x: -balances[x])
