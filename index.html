@@ -1,40 +1,52 @@
 <!doctype html>
 <html>
 <head>
-    <title>Poker Payout Calculator</title>
+    <title>Poker Game Optimization</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Poker Payout Calculator</h1>
-    <form action="{{ url_for('add_player') }}" method="POST">
-        <input type="text" name="name" placeholder="Player Name" required>
-        <input type="number" step="1.00" name="buy_in" placeholder="Buy In Amount" required>
-        <button type="submit">Add Player</button>
-    </form>
+    <div class="container">
+        <h1>Poker Game Optimization</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <form action="{{ url_for('add_player') }}" method="POST" class="form-inline">
+            <input type="text" name="name" placeholder="Player Name" required>
+            <input type="number" step="0.01" name="buy_in" placeholder="Buy In Amount" required>
+            <button type="submit" class="button">Add Player</button>
+        </form>
 
-    <h2>Players</h2>
-    {% for player in players %}
-        <div>
+        <h2>Players</h2>
+        {% for player in players %}
+        <div class="player-entry">
             <span>{{ player.name }} - Buy In: ${{ player.buy_in }}</span>
-            <form action="{{ url_for('add_default_buy_in', player_name=player.name) }}" method="POST" style="display: inline;">
-                <button type="submit">Add Default Buy In</button>
+            <form action="{{ url_for('add_default_buy_in', player_name=player.name) }}" method="POST" class="inline-form">
+                <button type="submit" class="button">Add Default Buy In</button>
             </form>
         </div>
-    {% endfor %}
-
-    <h2>Set Default Buy-In Amount</h2>
-    <form action="{{ url_for('set_default_buy_in') }}" method="POST">
-        <input type="number" step="1.00" name="default_buy_in" value="{{ default_buy_in }}" required>
-        <button type="submit">Set Default Buy In</button>
-    </form>
-
-    <form action="{{ url_for('finalize') }}" method="POST">
-        {% for player in players %}
-            <div>
-                <span>{{ player.name }} - Buy In: ${{ player.buy_in }}</span>
-                <input type="number" step="1.00" name="end_amount_{{ player.name }}" placeholder="End Amount" required>
-            </div>
         {% endfor %}
-        <button type="submit">Finalize</button>
-    </form>
+
+        <h2>Set Default Buy In Amount</h2>
+        <form action="{{ url_for('set_default_buy_in') }}" method="POST" class="form-inline">
+            <input type="number" step="0.01" name="default_buy_in" value="{{ default_buy_in }}" required>
+            <button type="submit" class="button">Set Default Buy In</button>
+        </form>
+
+        <form action="{{ url_for('finalize') }}" method="POST">
+            {% for player in players %}
+            <div class="player-entry">
+                <span>{{ player.name }} - Buy In: ${{ player.buy_in }}</span>
+                <input type="number" step="0.01" name="end_amount_{{ player.name }}" placeholder="End Amount" required>
+            </div>
+            {% endfor %}
+            <button type="submit" class="button">Finalize</button>
+        </form>
+    </div>
 </body>
 </html>
