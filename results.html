@@ -2,16 +2,21 @@
 <html>
 <head>
     <title>Poker Game Results</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Poker Game Results</h1>
-    <ul>
-        {% for payout in payouts %}
+    <div class="container">
+        <h1>Poker Game Results</h1>
+        <ul class="payout-list">
+            {% for payout in payouts %}
             <li>{{ payout }}</li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('edit') }}">Edit Amounts</a>
-    <a href="{{ url_for('index') }}">Start New Game</a>
-    <a href="{{ url_for('download') }}">Download Player Information</a>
+            {% endfor %}
+        </ul>
+        <div class="button-container">
+            <a href="{{ url_for('edit') }}" class="button">Edit Amounts</a>
+            <a href="{{ url_for('index') }}" class="button">Start New Game</a>
+            <a href="{{ url_for('download') }}" class="button">Download Player Information</a>
+        </div>
+    </div>
 </body>
 </html>
