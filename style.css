@@ -22,7 +22,7 @@ body {
 }
 
 h1, h2 {
-    color: #007bff;
+    color: #8cc9cb;
 }
 
 ul {
@@ -82,7 +82,7 @@ li {
     text-align: center;
     text-decoration: none;
     color: white;
-    background-color: #007bff;
+    background-color: #8cc9cb;
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s ease;
