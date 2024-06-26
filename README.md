@@ -169,10 +169,6 @@ poker-game-optimization/
 - [Pandas](https://pandas.pydata.org/) - Data analysis and manipulation library
 - [Gunicorn](https://gunicorn.org/) - Python WSGI HTTP Server for UNIX
 
-### Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request for any changes or enhancements.
-
 ### License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
