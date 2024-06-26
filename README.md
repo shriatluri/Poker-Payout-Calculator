@@ -1,4 +1,4 @@
-# Poker Game Optimization App
+# Poker Payout Calculator App
 
 This is a Flask-based web application for managing and optimizing poker game sessions. It allows players to input their buy-in amounts, track their final amounts, and calculate optimal payouts. The application also supports adding, editing, and removing buy-in amounts.
 
