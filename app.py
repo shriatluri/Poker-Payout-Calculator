@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, send_file, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 import pandas as pd
 import io
+import flask
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for flashing messages
@@ -26,6 +27,24 @@ def add_default_buy_in(player_name):
             player['buy_in'] += default_buy_in
     return redirect(url_for('index'))
 
+@app.route('/remove_default_buy_in/<player_name>', methods=['POST'])
+def remove_default_buy_in(player_name):
+    for player in players:
+        if player['name'] == player_name:
+            player['buy_in'] -= default_buy_in
+            if player['buy_in'] < 0:
+                player['buy_in'] = 0
+    return redirect(url_for('index'))
+
+@app.route('/edit_buy_in/<player_name>', methods=['POST'])
+def edit_buy_in(player_name):
+    new_buy_in = float(request.form['new_buy_in'])
+    for player in players:
+        if player['name'] == player_name:
+            player['buy_in'] = new_buy_in
+            flash(f'Updated {player_name}\'s buy-in amount to ${new_buy_in:.2f}', 'success')
+    return redirect(url_for('index'))
+
 @app.route('/set_default_buy_in', methods=['POST'])
 def set_default_buy_in():
     global default_buy_in
@@ -34,11 +53,9 @@ def set_default_buy_in():
 
 @app.route('/finalize', methods=['POST'])
 def finalize():
-    #variables for total buy in and total end amount
     total_buy_in = sum(player['buy_in'] for player in players)
     total_end_amount = sum(float(request.form[f'end_amount_{player["name"]}']) for player in players)
     
-    #if there is a discrepency between total end amount and total buy in
     if total_buy_in != total_end_amount:
         flash(f'Total end amount (${total_end_amount:.2f}) does not match total buy-in (${total_buy_in:.2f}). Please check your inputs.', 'error')
         return redirect(url_for('index'))
@@ -63,9 +80,12 @@ def download():
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Players')
     output.seek(0)
-    return send_file(output, download_name="players.xlsx", as_attachment=True)
+    
+    if flask.__version__ >= "2.0.0":
+        return send_file(output, download_name="players.xlsx", as_attachment=True)
+    else:
+        return send_file(output, attachment_filename="players.xlsx", as_attachment=True)
 
-#greedy algorithm to calculate the payouts of the function
 def calculate_payouts(players):
     balances = {player['name']: player['end_amount'] - player['buy_in'] for player in players}
     creditors = sorted((name for name, balance in balances.items() if balance > 0), key=lambda x: -balances[x])
